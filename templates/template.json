@@ -1,0 +1,105 @@
+{
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "storageName": {
+            "type": "string"
+        },
+        "hostingPlanName": {
+            "type": "string"
+        },
+        "hostingEnvironment": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "skuCode": {
+            "type": "string"
+        },
+        "workerSize": {
+            "type": "string"
+        },
+        "serverFarmResourceGroup": {
+            "type": "string"
+        },
+        "subscriptionId": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-03-01",
+            "name": "[parameters('name')]",
+            "type": "Microsoft.Web/sites",
+            "properties": {
+                "name": "[parameters('name')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~1"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "6.5.0"
+                        }
+                    ],
+                    "alwaysOn": true
+                },
+                "clientAffinityEnabled": false,
+                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "hostingEnvironment": "[parameters('hostingEnvironment')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
+            ],
+            "location": "[parameters('location')]",
+            "tags": {
+                "[concat('hidden-related:', '/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
+            },
+            "kind": "functionapp"
+        },
+        {
+            "apiVersion": "2016-09-01",
+            "name": "[parameters('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[parameters('hostingPlanName')]",
+                "workerSizeId": "[parameters('workerSize')]",
+                "reserved": false,
+                "numberOfWorkers": "1",
+                "hostingEnvironment": "[parameters('hostingEnvironment')]"
+            },
+            "sku": {
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
+            }
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[parameters('storageName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "accountType": "Standard_LRS"
+            }
+        }
+    ],
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0"
+}

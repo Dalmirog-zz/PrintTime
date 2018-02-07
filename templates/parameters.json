@@ -1,0 +1,36 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "PrintTime-Dev"
+        },
+        "storageName": {
+            "value": "printtimedevstorage"
+        },
+        "hostingPlanName": {
+            "value": "AppsWithSlots"
+        },
+        "hostingEnvironment": {
+            "value": ""
+        },
+        "location": {
+            "value": "Central US"
+        },
+        "sku": {
+            "value": "Standard"
+        },
+        "workerSize": {
+            "value": "0"
+        },
+        "serverFarmResourceGroup": {
+            "value": "PrintTime-Resources"
+        },
+        "skuCode": {
+            "value": "S1"
+        },
+        "subscriptionId": {
+            "value": "95bf77d2-64b1-4ed2-9de1-b5451e3881f5"
+        }
+    }
+}
